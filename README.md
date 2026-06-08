@@ -206,6 +206,32 @@ graph TB
     style Deploy fill:#1e293b,stroke:#34d399,color:#e2e8f0
 ```
 
+### 🔄 User Flow Diagram
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Trader
+    participant UI as Dashboard UI
+    participant WS as WebSocket Hook
+    participant Store as Zustand Store
+    participant Bin as Binance API
+
+    User->>UI: Selects asset ticker from Watchlist (e.g., BTCUSDT)
+    UI->>Store: Update selectedSymbol state
+    Store->>WS: Reconnect stream for new symbol
+    WS->>Bin: Establish wss://stream.binance.com connection
+    Bin-->>WS: Stream real-time trade ticks (sub-100ms)
+    WS->>Store: Update live prices & orderbook buffer
+    Store-->>UI: Re-render CandlestickChart & OrderBook panels dynamically
+    
+    User->>UI: Enters size & leverage inside Trade Panel
+    UI->>UI: Calculate margin requirement and check risk margin parameters
+    User->>UI: Clicks "PLACE BUY ORDER"
+    UI->>Store: Dispatch transaction order details
+    Store->>UI: Add new trade position to Active Positions grid
+```
+
 ---
 
 ## 🚀 Getting Started
